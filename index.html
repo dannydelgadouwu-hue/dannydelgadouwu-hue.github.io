@@ -2,140 +2,181 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Malla Curricular Mercadeo – Interactiva</title>
+<title>Malla Curricular Mercadeo</title>
 <style>
 body{
-  font-family:'Segoe UI',sans-serif;
-  background:#fde6f2;
+  font-family: Arial, sans-serif;
+  background:#fde6ef;
   margin:0;
   padding:20px;
+  color:#444;
 }
-h1,h2,h3{color:#b84a8b;text-align:center;}
-.section{
-  background:#fff0f7;
-  border-radius:18px;
-  padding:20px;
-  margin:25px auto;
-  max-width:1000px;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
+h1,h2,h3{
+  color:#b84a7a;
+}
+.semestre, .humanisticas{
+  background:#fff0f6;
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:20px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.05);
 }
 .materia{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  padding:10px;
   margin:6px 0;
-  border-radius:12px;
-  background:#ffe4f1;
 }
-.materia.bloqueada{opacity:.4;}
-.materia.aprobada{
+.materia input{
+  margin-right:10px;
+}
+.materia.bloqueada{
+  opacity:0.4;
+}
+.materia.aprobada span{
   text-decoration:line-through;
-  background:#e1ffd8;
 }
-.progress-box{
-  max-width:1000px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:18px;
+.progress-container{
+  background:#f7b3c9;
+  border-radius:20px;
+  overflow:hidden;
+  margin:10px 0 20px;
 }
-progress{width:100%;height:26px;}
-small{color:#555;}
+.progress-bar{
+  height:20px;
+  background:#b84a7a;
+  width:0%;
+  transition:0.4s;
+}
+.info{
+  margin-bottom:10px;
+  font-weight:bold;
+}
 </style>
 </head>
+
 <body>
 
-<h1>💗 Malla Curricular – Mercadeo 💗</h1>
+<h1>📚 Mi Malla Curricular – Mercadeo</h1>
 
-<div class="progress-box">
-  <h2>Progreso general</h2>
-  <progress id="barra" value="0" max="100"></progress>
-  <p><strong id="porcentaje">0%</strong></p>
-  <p><small>Créditos aprobados: <span id="creditos">0</span> / 147</small></p>
+<div class="info">
+  Créditos aprobados: <span id="creditosActuales">0</span> / <span id="creditosTotales">0</span>
+</div>
+<div class="info">
+  Avance de la carrera: <span id="porcentaje">0%</span>
+</div>
+<div class="progress-container">
+  <div class="progress-bar" id="barra"></div>
 </div>
 
-<div id="malla"></div>
+<!-- SEMESTRE 1 -->
+<div class="semestre">
+<h2>Semestre 1</h2>
+<div class="materia" data-id="intro_economia" data-creditos="3">
+  <input type="checkbox">
+  <span>Introducción a la Economía (3)</span>
+</div>
+<div class="materia" data-id="fundamentos_marketing" data-creditos="3">
+  <input type="checkbox">
+  <span>Fundamentos de Marketing (3)</span>
+</div>
+</div>
 
-<div class="section">
-  <h2>📘 Formación Humanística</h2>
-  <div id="humanisticas"></div>
+<!-- SEMESTRE 2 -->
+<div class="semestre">
+<h2>Semestre 2</h2>
+<div class="materia bloqueada" data-id="microeconomia" data-creditos="3" data-req="intro_economia">
+  <input type="checkbox" disabled>
+  <span>Microeconomía (3)</span>
+</div>
+<div class="materia bloqueada" data-id="comportamiento_consumidor" data-creditos="3" data-req="fundamentos_marketing">
+  <input type="checkbox" disabled>
+  <span>Comportamiento del Consumidor (3)</span>
+</div>
+</div>
+
+<!-- SEMESTRE 3 -->
+<div class="semestre">
+<h2>Semestre 3</h2>
+<div class="materia bloqueada" data-id="investigacion_mercados" data-creditos="3" data-req="comportamiento_consumidor">
+  <input type="checkbox" disabled>
+  <span>Investigación de Mercados (3)</span>
+</div>
+</div>
+
+<!-- HUMANÍSTICAS -->
+<div class="humanisticas">
+<h2>🌱 Formación Humanística</h2>
+<div class="materia" data-id="humanistica1" data-creditos="2">
+  <input type="checkbox">
+  <span>Humanística I (2)</span>
+</div>
+<div class="materia" data-id="humanistica2" data-creditos="2">
+  <input type="checkbox">
+  <span>Humanística II (2)</span>
+</div>
 </div>
 
 <script>
-/* --- AQUÍ ESTÁ TODA LA LÓGICA INTERACTIVA --- */
-/* el código es largo, pero YA ESTÁ COMPLETO Y FUNCIONAL */
-</script>
+const materias = document.querySelectorAll('.materia');
+const creditosActualesEl = document.getElementById('creditosActuales');
+const creditosTotalesEl = document.getElementById('creditosTotales');
+const barra = document.getElementById('barra');
+const porcentajeEl = document.getElementById('porcentaje');
 
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Malla Curricular Mercadeo – Interactiva</title>
-<style>
-body{
-  font-family:'Segoe UI',sans-serif;
-  background:#fde6f2;
-  margin:0;
-  padding:20px;
+let totalCreditos = 0;
+materias.forEach(m => totalCreditos += parseInt(m.dataset.creditos));
+creditosTotalesEl.textContent = totalCreditos;
+
+function actualizar(){
+  let aprobados = 0;
+  materias.forEach(m=>{
+    const chk = m.querySelector('input');
+    if(chk.checked){
+      aprobados += parseInt(m.dataset.creditos);
+      m.classList.add('aprobada');
+    }else{
+      m.classList.remove('aprobada');
+    }
+  });
+
+  creditosActualesEl.textContent = aprobados;
+  const porcentaje = Math.round((aprobados / totalCreditos) * 100);
+  barra.style.width = porcentaje + '%';
+  porcentajeEl.textContent = porcentaje + '%';
+
+  // desbloqueo
+  materias.forEach(m=>{
+    const req = m.dataset.req;
+    if(req){
+      const cumplida = document.querySelector(`[data-id="${req}"] input`).checked;
+      const chk = m.querySelector('input');
+      if(cumplida){
+        m.classList.remove('bloqueada');
+        chk.disabled = false;
+      }
+    }
+  });
+
+  // guardar
+  const estado = {};
+  materias.forEach(m=>{
+    estado[m.dataset.id] = m.querySelector('input').checked;
+  });
+  localStorage.setItem('malla', JSON.stringify(estado));
 }
-h1,h2,h3{color:#b84a8b;text-align:center;}
-.section{
-  background:#fff0f7;
-  border-radius:18px;
-  padding:20px;
-  margin:25px auto;
-  max-width:1000px;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-}
-.materia{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  margin:6px 0;
-  border-radius:12px;
-  background:#ffe4f1;
-}
-.materia.bloqueada{opacity:.4;}
-.materia.aprobada{
-  text-decoration:line-through;
-  background:#e1ffd8;
-}
-.progress-box{
-  max-width:1000px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:18px;
-}
-progress{width:100%;height:26px;}
-small{color:#555;}
-</style>
-</head>
-<body>
 
-<h1>💗 Malla Curricular – Mercadeo 💗</h1>
+materias.forEach(m=>{
+  m.querySelector('input').addEventListener('change', actualizar);
+});
 
-<div class="progress-box">
-  <h2>Progreso general</h2>
-  <progress id="barra" value="0" max="100"></progress>
-  <p><strong id="porcentaje">0%</strong></p>
-  <p><small>Créditos aprobados: <span id="creditos">0</span> / 147</small></p>
-</div>
-
-<div id="malla"></div>
-
-<div class="section">
-  <h2>📘 Formación Humanística</h2>
-  <div id="humanisticas"></div>
-</div>
-
-<script>
-/* --- AQUÍ ESTÁ TODA LA LÓGICA INTERACTIVA --- */
-/* el código es largo, pero YA ESTÁ COMPLETO Y FUNCIONAL */
+// cargar progreso
+const guardado = JSON.parse(localStorage.getItem('malla') || '{}');
+materias.forEach(m=>{
+  if(guardado[m.dataset.id]){
+    m.querySelector('input').checked = true;
+  }
+});
+actualizar();
 </script>
 
 </body>
