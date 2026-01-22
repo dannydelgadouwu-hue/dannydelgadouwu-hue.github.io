@@ -6,124 +6,161 @@
 
 <style>
 body{
-  font-family:'Poppins', Arial, sans-serif;
-  background:linear-gradient(180deg,#ffe6f0,#fff);
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(180deg,#ffe4f1,#fff);
   padding:20px;
-  color:#4a2c3a;
+  color:#5a2a3c;
 }
 h1{text-align:center;color:#d63384;}
-h2{color:#c2185b;}
+h2{color:#c2185b;margin-bottom:8px}
 .semestre{
   background:#fff0f6;
-  border-radius:22px;
+  border-radius:24px;
   padding:15px;
   margin-bottom:20px;
-  box-shadow:0 6px 15px rgba(214,51,132,.18);
+  box-shadow:0 8px 18px rgba(214,51,132,.2);
 }
 .materia{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:6px 0;
-  background:#ffffff;
   padding:8px 12px;
+  margin:6px 0;
   border-radius:14px;
-  opacity:1;
+  background:#fff;
 }
-.materia.bloqueada{
-  opacity:.4;
-}
+.materia.bloqueada{opacity:.4}
 input[type=checkbox]{
   accent-color:#d63384;
   transform:scale(1.2);
-  margin-right:8px;
 }
 progress{
   width:100%;
   height:22px;
   border-radius:20px;
 }
-progress::-webkit-progress-bar{background:#ffd6e8;}
+progress::-webkit-progress-bar{background:#ffd6e8}
 progress::-webkit-progress-value{
-  background:linear-gradient(90deg,#ff8dc7,#d63384);
+  background:linear-gradient(90deg,#ff9acb,#d63384)
 }
-#porcentaje{text-align:center;font-weight:bold;}
+.resumen{
+  background:#ffe9f4;
+  padding:15px;
+  border-radius:20px;
+  margin-bottom:20px;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
-<h1>💗 Malla Curricular Mercadeo 💗</h1>
+<h1>🎀 Malla Curricular Mercadeo 🎀</h1>
 
-<progress id="barra" value="0" max="165"></progress>
-<p id="porcentaje">0% completado</p>
+<div class="resumen">
+  <progress id="barra" value="0" max="165"></progress>
+  <p id="avance">0% completado</p>
+  <p id="creditos">Créditos: 0 / 165</p>
+  <p id="faltan">Faltan: 165 créditos</p>
+</div>
 
 <div id="malla"></div>
 
+<h2>💗 Humanísticas, Electivas y Complementarias</h2>
+<div class="semestre">
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación Humanística – Humanismo</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Cultura artística y física</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación ciudadana</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Problemáticas de contexto</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Historia Política</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Epistemología</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="4"> Ética y Compromiso Social</label><span>4</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="4"> Electivas de Complementación</label><span>4</span></div>
+</div>
+
 <script>
+const totalCreditos=165;
+
 const materias=[
-{ id:"eco", n:1, nombre:"Introducción a la Economía", cr:3 },
-{ id:"micro", n:2, nombre:"Microeconomía", cr:3, req:["eco"] },
+{ id:"eco", s:1, n:"Introducción a la Economía", c:3 },
+{ id:"micro", s:2, n:"Microeconomía", c:3, r:["eco"] },
 
-{ id:"psi", n:1, nombre:"Psicología del Consumidor", cr:2 },
-{ id:"comp", n:2, nombre:"Comportamiento del Consumidor", cr:2, req:["psi"] },
+{ id:"psi", s:1, n:"Psicología del Consumidor", c:2 },
+{ id:"comp", s:2, n:"Comportamiento del Consumidor", c:2, r:["psi"] },
 
-{ id:"est1", n:3, nombre:"Estadística I", cr:3 },
-{ id:"est2", n:4, nombre:"Estadística II", cr:3, req:["est1"] },
+{ id:"est1", s:3, n:"Estadística I", c:3 },
+{ id:"est2", s:4, n:"Estadística II", c:3, r:["est1"] },
 
-{ id:"fund", n:1, nombre:"Fundamentos de Mercadeo", cr:3 },
-{ id:"mix", n:5, nombre:"Mix de Comunicación", cr:3, req:["fund"] },
+{ id:"fund", s:1, n:"Fundamentos de Mercadeo", c:3 },
+{ id:"mix", s:5, n:"Mix de Comunicación", c:3, r:["fund"] },
 
-{ id:"qual", n:6, nombre:"Investigación de Mercados Cualitativa", cr:3 },
-{ id:"quant", n:7, nombre:"Investigación de Mercados Cuantitativa", cr:3, req:["qual"] },
+{ id:"emp", s:5, n:"Empaques y Embalajes", c:3, r:["fund"] },
 
-{ id:"int1", n:7, nombre:"Mercadeo Internacional I", cr:3 },
-{ id:"int2", n:8, nombre:"Mercadeo Internacional II", cr:3, req:["int1"] },
+{ id:"sim", s:5, n:"Sistema de Información de Mercados", c:3 },
+{ id:"qual", s:6, n:"Investigación de Mercados Cualitativa", c:3, r:["sim"] },
+{ id:"quant", s:7, n:"Investigación de Mercados Cuantitativa", c:3, r:["qual"] },
 
-{ id:"marca", n:8, nombre:"Gerencia de Marca", cr:3, req:["producto"] },
-{ id:"producto", n:3, nombre:"Gerencia del Producto", cr:3 }
+{ id:"prod", s:3, n:"Gerencia del Producto", c:3 },
+{ id:"marca", s:8, n:"Gerencia de Marca", c:3, r:["prod"] },
+
+{ id:"int1", s:7, n:"Mercadeo Internacional I", c:3 },
+{ id:"int2", s:8, n:"Mercadeo Internacional II", c:3, r:["int1"] },
+
+{ id:"fin", s:5, n:"Matemática Financiera", c:3 },
+{ id:"proy", s:7, n:"Formulación y Evaluación de Proyectos", c:3, r:["fin"] },
+
+{ id:"promo", s:6, n:"Mercadeo Promocional", c:3, r:["mix"] },
+{ id:"pub", s:6, n:"Publicidad", c:3, r:["mix"] },
+
+{ id:"estr", s:7, n:"Mercadeo Estratégico", c:3 },
+{ id:"ventas", s:8, n:"Gerencia de Ventas", c:3, r:["estr"] },
+
+{ id:"plan", s:9, n:"Plan Estratégico de Mercadeo", c:3, r:["marca","ventas"] },
+
+{ id:"prac", s:10, n:"Práctica Profesional", c:11 }
 ];
 
 const malla=document.getElementById("malla");
 const semestres={};
 
 materias.forEach(m=>{
-  if(!semestres[m.n]){
-    semestres[m.n]=document.createElement("div");
-    semestres[m.n].className="semestre";
-    semestres[m.n].innerHTML=`<h2>💖 Semestre ${m.n}</h2>`;
-    malla.appendChild(semestres[m.n]);
+  if(!semestres[m.s]){
+    semestres[m.s]=document.createElement("div");
+    semestres[m.s].className="semestre";
+    semestres[m.s].innerHTML=`<h2>🌸 Semestre ${m.s}</h2>`;
+    malla.appendChild(semestres[m.s]);
   }
-  let d=document.createElement("div");
+  const d=document.createElement("div");
   d.className="materia";
   d.id="box-"+m.id;
-  d.innerHTML=`<label><input type="checkbox" id="${m.id}" data-creditos="${m.cr}"> ${m.nombre}</label><span>${m.cr} cr</span>`;
-  semestres[m.n].appendChild(d);
+  d.innerHTML=`<label><input type="checkbox" id="${m.id}" data-creditos="${m.c}"> ${m.n}</label><span>${m.c}</span>`;
+  semestres[m.s].appendChild(d);
 });
 
 function actualizar(){
-  let total=0;
+  let suma=0;
   document.querySelectorAll("input[type=checkbox]").forEach(c=>{
-    if(c.checked) total+=Number(c.dataset.creditos);
+    if(c.checked) suma+=Number(c.dataset.creditos);
   });
-  document.getElementById("barra").value=total;
-  document.getElementById("porcentaje").innerText=Math.round(total/165*100)+"% completado 💕";
+  document.getElementById("barra").value=suma;
+  document.getElementById("avance").innerText=Math.round(suma/totalCreditos*100)+"% completado 💕";
+  document.getElementById("creditos").innerText="Créditos: "+suma+" / "+totalCreditos;
+  document.getElementById("faltan").innerText="Faltan: "+(totalCreditos-suma)+" créditos";
   desbloquear();
 }
 
 function desbloquear(){
   materias.forEach(m=>{
-    if(m.req){
-      const box=document.getElementById("box-"+m.id);
-      const check=document.getElementById(m.id);
-      const ok=m.req.every(r=>document.getElementById(r).checked);
-      check.disabled=!ok;
-      box.classList.toggle("bloqueada",!ok);
+    if(m.r){
+      const ok=m.r.every(x=>document.getElementById(x).checked);
+      const chk=document.getElementById(m.id);
+      chk.disabled=!ok;
+      document.getElementById("box-"+m.id).classList.toggle("bloqueada",!ok);
     }
   });
 }
 
-document.querySelectorAll("input").forEach(c=>c.addEventListener("change",actualizar));
+document.querySelectorAll("input").forEach(i=>i.addEventListener("change",actualizar));
 desbloquear();
 </script>
 
