@@ -7,18 +7,18 @@
 <style>
 body{
   font-family:'Poppins',sans-serif;
-  background:linear-gradient(180deg,#ffe4f1,#ffffff);
-  padding:20px;
+  background:linear-gradient(180deg,#ffe6f2,#fff);
   color:#5a2a3c;
+  padding:20px;
 }
 h1{text-align:center;color:#d63384;}
-h2{color:#c2185b}
+h2{color:#c2185b;margin-bottom:10px}
 .semestre{
-  background:#fff0f6;
-  border-radius:24px;
-  padding:16px;
+  background:#fff0f7;
+  border-radius:22px;
+  padding:15px;
   margin-bottom:20px;
-  box-shadow:0 8px 18px rgba(214,51,132,.2);
+  box-shadow:0 8px 20px rgba(214,51,132,.18);
 }
 .materia{
   display:flex;
@@ -27,179 +27,163 @@ h2{color:#c2185b}
   padding:8px 12px;
   margin:6px 0;
   border-radius:14px;
-  background:#ffffff;
+  background:white;
 }
 .materia.bloqueada{opacity:.4}
-input[type=checkbox]{
-  accent-color:#d63384;
-  transform:scale(1.2);
-}
-.resumen{
-  background:#ffe9f4;
-  padding:16px;
-  border-radius:22px;
-  margin-bottom:20px;
-  text-align:center;
-}
-progress{
-  width:100%;
-  height:22px;
-  border-radius:20px;
-}
-progress::-webkit-progress-bar{background:#ffd6e8}
+input{accent-color:#d63384;transform:scale(1.2)}
+progress{width:100%;height:22px;border-radius:20px}
+progress::-webkit-progress-bar{background:#ffd6ea}
 progress::-webkit-progress-value{
   background:linear-gradient(90deg,#ff9acb,#d63384)
+}
+.resumen{
+  background:#ffe3f1;
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:25px;
+  box-shadow:0 6px 15px rgba(214,51,132,.2)
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎀 Malla Curricular – Mercadeo 🎀</h1>
+<h1>💗 Malla Curricular – Mercadeo 💗</h1>
 
 <div class="resumen">
   <progress id="barra" value="0" max="165"></progress>
-  <p id="avance">0% completado</p>
-  <p id="creditos">Créditos: 0 / 165</p>
-  <p id="faltan">Faltan: 165 créditos</p>
+  <p id="estado"></p>
 </div>
 
 <div id="malla"></div>
 
-<h2>💗 Humanísticas, Competencias y Requisitos</h2>
 <div class="semestre">
-  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación Humanística – Humanismo</label><span>2</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="2"> Cultura artística y cultura física</label><span>2</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación ciudadana</label><span>2</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="2"> Problemáticas de contexto</label><span>2</span></div>
-
-  <div class="materia"><label><input type="checkbox" data-creditos="1"> Lectura y producción de textos I</label><span>1</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="1"> Lectura y producción de textos II</label><span>1</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="2"> Lenguaje y herramientas informáticas</label><span>2</span></div>
-
-  <div class="materia"><label><input type="checkbox" data-creditos="4"> Ética y Compromiso Social</label><span>4</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="4"> Electivas de Complementación</label><span>4</span></div>
-
-  <div class="materia"><label><input type="checkbox" data-creditos="0"> Eficiencia en Inglés</label><span>Req.</span></div>
-  <div class="materia"><label><input type="checkbox" data-creditos="0"> Trabajo de Grado</label><span>Req.</span></div>
+<h2>🌸 Humanísticas, Competencias y Complementarias</h2>
+<div class="materia"><label><input type="checkbox" data-cr="2"> Formación Humanística – Humanismo</label><span>2</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="2"> Cultura artística y física</label><span>2</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="2"> Formación ciudadana</label><span>2</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="2"> Problemáticas de contexto</label><span>2</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="1"> Lectura y textos I</label><span>1</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="1"> Lectura y textos II</label><span>1</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="2"> Herramientas informáticas</label><span>2</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="4"> Ética y Compromiso Social</label><span>4</span></div>
+<div class="materia"><label><input type="checkbox" data-cr="4"> Electivas de Complementación</label><span>4</span></div>
 </div>
 
 <script>
 const TOTAL=165;
 
 const materias=[
-/* SEMESTRE 1 */
-{id:"fund",s:1,n:"Fundamentos de Mercadeo",c:3},
-{id:"psi",s:1,n:"Psicología del Consumidor",c:2},
-{id:"teo",s:1,n:"Teoría de la Investigación",c:3},
-{id:"eco",s:1,n:"Introducción a la Economía",c:3},
-{id:"calc",s:1,n:"Cálculo Diferencial e Integral",c:3},
+["fund","Fundamentos de Mercadeo",3,1],
+["psi","Psicología del Consumidor",2,1],
+["teo","Teoría de la Investigación",3,1],
+["eco","Introducción a la Economía",3,1],
+["calc","Cálculo Diferencial e Integral",3,1],
 
-/* SEMESTRE 2 */
-{id:"comp",s:2,n:"Comportamiento del Consumidor",c:2,r:["psi"]},
-{id:"met",s:2,n:"Metodología de la Investigación",c:3},
-{id:"micro",s:2,n:"Microeconomía",c:3,r:["eco"]},
-{id:"alg",s:2,n:"Álgebra de Matrices y Prog. Lineal",c:3},
-{id:"adm",s:2,n:"Administración",c:2},
+["comp","Comportamiento del Consumidor",2,2,["psi"]],
+["met","Metodología de la Investigación",3,2],
+["micro","Microeconomía",3,2,["eco"]],
+["alg","Álgebra y Prog. Lineal",3,2],
+["adm","Administración",2,2],
 
-/* SEMESTRE 3 */
-{id:"leg",s:3,n:"Legislación Comercial",c:3},
-{id:"prod",s:3,n:"Gerencia del Producto",c:3},
-{id:"macro",s:3,n:"Macroeconomía",c:3},
-{id:"est1",s:3,n:"Estadística I",c:3},
-{id:"cont",s:3,n:"Contabilidad Financiera y de Costos",c:2},
-{id:"prac",s:3,n:"Practica investigativa",c:2},
+["leg","Legislación Comercial",3,3],
+["prod","Gerencia del Producto",3,3],
+["macro","Macroeconomía",3,3],
+["est1","Estadística I",3,3],
+["cont","Contabilidad de Costos",2,3],
+["pi3","Práctica Investigativa",5,3],
 
-/* SEMESTRE 4 */
-{id:"serv",s:4,n:"Mercadeo de Servicios",c:3},
-{id:"precio",s:4,n:"Gerencia de Precio",c:3,r:["comp"]},
-{id:"lab",s:4,n:"Laboratorio del Consumidor",c:3},
-{id:"col",s:4,n:"Economía Colombiana",c:3},
-{id:"est2",s:4,n:"Estadística II",c:3,r:["est1"]},
-{id:"prac",s:3,n:"Practica investigativa",c:2},
+["serv","Mercadeo de Servicios",3,4],
+["precio","Gerencia de Precio",3,4,["comp"]],
+["lab","Laboratorio del Consumidor",3,4],
+["col","Economía Colombiana",3,4],
+["est2","Estadística II",3,4,["est1"]],
+["pi4","Práctica Investigativa",0,4],
 
-/* SEMESTRE 5 */
-{id:"mix",s:5,n:"Mix de Comunicación",c:3,r:["fund"]},
-{id:"emp",s:5,n:"Empaques y Embalajes",c:3,r:["fund"]},
-{id:"green",s:5,n:"Green Marketing",c:2},
-{id:"sim",s:5,n:"Sistema de Información de Mercados",c:3},
-{id:"fin",s:5,n:"Matemática Financiera",c:3},
-{id:"prac",s:3,n:"Practica investigativa",c:1},
+["mix","Mix de Comunicación",3,5,["fund"]],
+["emp","Empaques y Embalajes",3,5,["fund"]],
+["green","Green Marketing",2,5],
+["sim","Sistema de Información de Mercados",3,5],
+["fin","Matemática Financiera",3,5],
+["pi5","Práctica Investigativa",0,5],
 
-/* SEMESTRE 6 */
-{id:"promo",s:6,n:"Mercadeo Promocional y Merchandising",c:3,r:["mix"]},
-{id:"pub",s:6,n:"Publicidad",c:3,r:["mix"]},
-{id:"empres",s:6,n:"Empresarismo e Idea de Negocios",c:2},
-{id:"elec",s:6,n:"Mercadeo Electrónico",c:3},
-{id:"qual",s:6,n:"Investigación de Mercados Cualitativa",c:3,r:["sim"]},
+["promo","Mercadeo Promocional",3,6,["mix"]],
+["pub","Publicidad",3,6,["mix"]],
+["idea","Empresarismo",2,6],
+["elec","Mercadeo Electrónico",3,6],
+["qual","Inv. Mercados Cualitativa",3,6,["sim"]],
+["pi6","Práctica Investigativa",0,6],
 
-/* SEMESTRE 7 */
-{id:"int1",s:7,n:"Mercadeo Internacional I",c:3},
-{id:"quant",s:7,n:"Investigación de Mercados Cuantitativa",c:3,r:["qual"]},
-{id:"estr",s:7,n:"Mercadeo Estratégico",c:3},
-{id:"proy",s:7,n:"Formulación y Evaluación de Proyectos",c:3,r:["fin"]},
-{id:"elec7",s:7,n:"Electiva de Profundización",c:3},
+["int1","Mercadeo Internacional I",3,7],
+["quant","Inv. Mercados Cuantitativa",3,7,["qual"]],
+["estr","Mercadeo Estratégico",3,7],
+["proj","Formulación de Proyectos",3,7,["fin"]],
+["ep7","Electiva Profundización",3,7],
 
-/* SEMESTRE 8 */
-{id:"int2",s:8,n:"Mercadeo Internacional II",c:3,r:["int1"]},
-{id:"marca",s:8,n:"Gerencia de Marca",c:3,r:["prod"]},
-{id:"ventas",s:8,n:"Gerencia de Ventas",c:3,r:["estr"]},
-{id:"semin",s:8,n:"Seminario de Trabajo de Grado",c:3,r:["met"]},
-{id:"elec8",s:8,n:"Electiva de Profundización",c:3},
+["int2","Mercadeo Internacional II",3,8,["int1"]],
+["marca","Gerencia de Marca",3,8,["prod"]],
+["ventas","Gerencia de Ventas",3,8,["estr"]],
+["semi","Seminario Trabajo de Grado",3,8,["met"]],
+["ep8","Electiva Profundización",3,8],
 
-/* SEMESTRE 9 */
-{id:"plan",s:9,n:"Plan Estratégico de Mercadeo",c:3,r:["marca","ventas"]},
-{id:"intel",s:9,n:"Inteligencia de Mercados",c:3},
-{id:"dist",s:9,n:"Gerencia de Distribución y Logística",c:3},
-{id:"neg",s:9,n:"Negocios Internacionales",c:3},
-{id:"elec9",s:9,n:"Electiva de Profundización",c:3},
+["plan","Plan Estratégico",3,9,["marca","ventas"]],
+["intel","Inteligencia de Mercados",3,9],
+["dist","Distribución y Logística",3,9],
+["neg","Negocios Internacionales",3,9],
+["ep9","Electiva Profundización",3,9],
 
-/* SEMESTRE 10 */
-{id:"prac",s:10,n:"Práctica Profesional",c:11}
+["prac","Práctica Profesional",11,10]
 ];
 
-const malla=document.getElementById("malla");
+const cont=document.getElementById("malla");
 const sem={};
 
 materias.forEach(m=>{
-  if(!sem[m.s]){
-    sem[m.s]=document.createElement("div");
-    sem[m.s].className="semestre";
-    sem[m.s].innerHTML=`<h2>🌸 Semestre ${m.s}</h2>`;
-    malla.appendChild(sem[m.s]);
-  }
-  const d=document.createElement("div");
-  d.className="materia";
-  d.id="box-"+m.id;
-  d.innerHTML=`<label><input type="checkbox" id="${m.id}" data-creditos="${m.c}"> ${m.n}</label><span>${m.c}</span>`;
-  sem[m.s].appendChild(d);
+ if(!sem[m[3]]){
+  sem[m[3]]=document.createElement("div");
+  sem[m[3]].className="semestre";
+  sem[m[3]].innerHTML=`<h2>💖 Semestre ${m[3]}</h2>`;
+  cont.appendChild(sem[m[3]]);
+ }
+ let d=document.createElement("div");
+ d.className="materia";
+ d.id=m[0];
+ d.innerHTML=`<label><input type="checkbox" data-cr="${m[2]}"> ${m[1]}</label><span>${m[2]} cr</span>`;
+ sem[m[3]].appendChild(d);
 });
 
-function actualizar(){
-  let sum=0;
-  document.querySelectorAll("input[type=checkbox]").forEach(c=>{
-    if(c.checked) sum+=Number(c.dataset.creditos);
-  });
-  document.getElementById("barra").value=sum;
-  document.getElementById("avance").innerText=Math.round(sum/TOTAL*100)+"% completado 💕";
-  document.getElementById("creditos").innerText=`Créditos: ${sum} / ${TOTAL}`;
-  document.getElementById("faltan").innerText=`Faltan: ${TOTAL-sum} créditos`;
-  desbloquear();
+function update(){
+ let total=0;
+ document.querySelectorAll("input").forEach(c=>{
+  if(c.checked) total+=+c.dataset.cr;
+ });
+ document.getElementById("barra").value=total;
+ document.getElementById("estado").innerText=
+ `Avance: ${Math.round(total/TOTAL*100)}% 💕 | Créditos: ${total} / ${TOTAL} | Faltan ${TOTAL-total}`;
+ localStorage.setItem("malla",JSON.stringify([...document.querySelectorAll("input")].map(c=>c.checked)));
+ desbloquear();
 }
 
 function desbloquear(){
-  materias.forEach(m=>{
-    if(m.r){
-      const ok=m.r.every(x=>document.getElementById(x).checked);
-      const chk=document.getElementById(m.id);
-      chk.disabled=!ok;
-      document.getElementById("box-"+m.id).classList.toggle("bloqueada",!ok);
-    }
-  });
+ materias.forEach(m=>{
+  if(m[4]){
+   let ok=m[4].every(r=>document.querySelector(`#${r} input`).checked);
+   let box=document.getElementById(m[0]);
+   let chk=box.querySelector("input");
+   chk.disabled=!ok;
+   box.classList.toggle("bloqueada",!ok);
+  }
+ });
 }
 
-document.querySelectorAll("input").forEach(i=>i.addEventListener("change",actualizar));
+const saved=JSON.parse(localStorage.getItem("malla")||"[]");
+document.querySelectorAll("input").forEach((c,i)=>{
+ if(saved[i]) c.checked=true;
+ c.addEventListener("change",update);
+});
+
 desbloquear();
+update();
 </script>
 
 </body>
