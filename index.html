@@ -2,206 +2,164 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Malla Curricular Mercadeo</title>
+<title>Malla Mercadeo</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #fdecef;
-  padding: 20px;
-}
-h1, h2, h3 {
-  text-align: center;
-  color: #b83280;
-}
-.semestre, .humanisticas {
-  background: #fff;
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-.materia {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px;
-  border-bottom: 1px dashed #f3c2d3;
-}
-.materia.bloqueada {
-  opacity: 0.4;
-}
-.materia.aprobada span {
-  text-decoration: line-through;
-}
-.progress {
-  background: #f3c2d3;
-  border-radius: 20px;
-  overflow: hidden;
-  margin: 15px 0;
-}
-.progress-bar {
-  background: #b83280;
-  height: 20px;
-  width: 0%;
-  color: white;
-  text-align: center;
-  font-size: 12px;
-}
+body{font-family:Arial;background:#fdecef;padding:20px}
+h1,h2,h3{text-align:center;color:#b83280}
+.card{background:#fff;border-radius:16px;padding:15px;margin-bottom:20px;box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.materia{display:flex;justify-content:space-between;padding:6px;border-bottom:1px dashed #f3c2d3}
+.aprobada span{text-decoration:line-through}
+.bloqueada{opacity:.4}
+.progress{background:#f3c2d3;border-radius:20px;overflow:hidden}
+.bar{background:#b83280;height:22px;color:#fff;text-align:center;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.grid div{background:#ffe4ef;border-radius:12px;padding:10px;text-align:center}
 </style>
 </head>
 <body>
 
 <h1>📚 Malla Curricular – Mercadeo</h1>
 
-<div class="progress">
-  <div class="progress-bar" id="barra">0%</div>
+<div class="progress"><div id="bar" class="bar">0%</div></div>
+<p style="text-align:center"><b><span id="tot">0</span> / 165 créditos</b></p>
+
+<div class="card">
+<h2>📊 Resumen Créditos Académicos</h2>
+<div class="grid">
+<div>Programa<br><b><span id="cProg">0</span> / 149</b></div>
+<div>Humanísticas<br><b><span id="cHum">0</span> / 12</b></div>
+<div>Ética<br><b><span id="cEt">0</span> / 4</b></div>
+<div>Total General<br><b><span id="cTot">0</span> / 165</b></div>
 </div>
-<p style="text-align:center;">
-Créditos aprobados: <span id="creditos">0</span> |
-Avance: <span id="porcentaje">0</span>%
-</p>
+</div>
 
-<div id="contenedor"></div>
+<div id="malla"></div>
 
-<div class="humanisticas">
+<div class="card">
 <h2>🌸 Humanísticas y Competencias</h2>
-<div id="humanisticas"></div>
+<div id="hum"></div>
+</div>
+
+<div class="card">
+<h2>⚖️ Ética y Compromiso Social</h2>
+<div class="materia">
+<span>Ética y Compromiso Social (4)</span>
+<input type="checkbox" onclick="tog('etica')" id="etica">
+</div>
 </div>
 
 <script>
-const materias = [
-  // SEMESTRE 1
-  {id:"fm", nombre:"Fundamentos de Mercadeo", c:3, s:1, pre:[]},
-  {id:"ps", nombre:"Psicología del Consumidor", c:2, s:1, pre:[]},
-  {id:"ti", nombre:"Teoría de la Investigación", c:3, s:1, pre:[]},
-  {id:"ie", nombre:"Introducción a la Economía", c:3, s:1, pre:[]},
-  {id:"cd", nombre:"Cálculo Diferencial e Integral", c:3, s:1, pre:[]},
+const TOTAL=165;
 
-  // SEMESTRE 2
-  {id:"cc", nombre:"Comportamiento del Consumidor", c:2, s:2, pre:["ps"]},
-  {id:"mi", nombre:"Metodología de la Investigación", c:3, s:2, pre:[]},
-  {id:"me", nombre:"Microeconomía", c:3, s:2, pre:["ie"]},
-  {id:"am", nombre:"Álgebra de Matrices y Prog. Lineal", c:3, s:2, pre:[]},
-  {id:"ad", nombre:"Administración", c:2, s:2, pre:[]},
+const materias=[
+["fm","Fundamentos de Mercadeo",3,1,[]],
+["ps","Psicología del Consumidor",2,1,[]],
+["ti","Teoría de la Investigación",3,1,[]],
+["ie","Introducción a la Economía",3,1,[]],
+["cd","Cálculo Diferencial e Integral",3,1,[]],
 
-  // SEMESTRE 3
-  {id:"lc", nombre:"Legislación Comercial", c:3, s:3, pre:[]},
-  {id:"gp", nombre:"Gerencia del Producto", c:3, s:3, pre:[]},
-  {id:"ma", nombre:"Macroeconomía", c:3, s:3, pre:[]},
-  {id:"e1", nombre:"Estadística I", c:3, s:3, pre:[]},
-  {id:"co", nombre:"Contabilidad Financiera y Costos", c:2, s:3, pre:[]},
+["cc","Comportamiento del Consumidor",2,2,["ps"]],
+["mi","Metodología de la Investigación",3,2,[]],
+["me","Microeconomía",3,2,["ie"]],
+["am","Álgebra de Matrices",3,2,[]],
+["ad","Administración",2,2,[]],
 
-  // SEMESTRE 4
-  {id:"ms", nombre:"Mercadeo de Servicios", c:3, s:4, pre:[]},
-  {id:"gpr", nombre:"Gerencia de Precio", c:3, s:4, pre:["cc"]},
-  {id:"lab", nombre:"Laboratorio del Consumidor", c:3, s:4, pre:[]},
-  {id:"eco", nombre:"Economía Colombiana", c:3, s:4, pre:[]},
-  {id:"e2", nombre:"Estadística II", c:3, s:4, pre:["e1"]},
+["lc","Legislación Comercial",3,3,[]],
+["gp","Gerencia del Producto",3,3,[]],
+["ma","Macroeconomía",3,3,[]],
+["e1","Estadística I",3,3,[]],
+["co","Contabilidad y Costos",2,3,[]],
 
-  // SEMESTRE 5
-  {id:"mix", nombre:"Mix de Comunicación", c:3, s:5, pre:["fm"]},
-  {id:"emp", nombre:"Empaques y Embalajes", c:3, s:5, pre:["fm"]},
-  {id:"green", nombre:"Green Marketing", c:2, s:5, pre:[]},
-  {id:"sim", nombre:"Sistema de Información de Mercados", c:3, s:5, pre:[]},
-  {id:"mf", nombre:"Matemática Financiera", c:3, s:5, pre:[]},
+["ms","Mercadeo de Servicios",3,4,[]],
+["gpr","Gerencia de Precio",3,4,["cc"]],
+["lab","Laboratorio del Consumidor",3,4,[]],
+["eco","Economía Colombiana",3,4,[]],
+["e2","Estadística II",3,4,["e1"]],
 
-  // SEMESTRE 6
-  {id:"mp", nombre:"Mercadeo Promocional y Merchandising", c:3, s:6, pre:["mix"]},
-  {id:"pub", nombre:"Publicidad", c:3, s:6, pre:["mix"]},
-  {id:"empn", nombre:"Empresarismo e Idea de Negocios", c:2, s:6, pre:[]},
-  {id:"melec", nombre:"Mercadeo Electrónico", c:3, s:6, pre:[]},
-  {id:"ic", nombre:"Investigación Cualitativa", c:3, s:6, pre:["sim"]},
+["mix","Mix de Comunicación",3,5,["fm"]],
+["emp","Empaques y Embalajes",3,5,["fm"]],
+["green","Green Marketing",2,5,[]],
+["sim","Sistema de Info. de Mercados",3,5,[]],
+["mf","Matemática Financiera",3,5,[]],
 
-  // SEMESTRE 7
-  {id:"mi1", nombre:"Mercadeo Internacional I", c:3, s:7, pre:[]},
-  {id:"icu", nombre:"Investigación Cuantitativa", c:3, s:7, pre:["ic"]},
-  {id:"mes", nombre:"Mercadeo Estratégico", c:3, s:7, pre:[]},
-  {id:"fp", nombre:"Formulación y Eval. de Proyectos", c:3, s:7, pre:["mf"]},
+["mp","Mercadeo Promocional",3,6,["mix"]],
+["pub","Publicidad",3,6,["mix"]],
+["empn","Empresarismo",2,6,[]],
+["melec","Mercadeo Electrónico",3,6,[]],
+["ic","Inv. Cualitativa",3,6,["sim"]],
 
-  // SEMESTRE 8
-  {id:"mi2", nombre:"Mercadeo Internacional II", c:3, s:8, pre:["mi1"]},
-  {id:"gm", nombre:"Gerencia de Marca", c:3, s:8, pre:["gp"]},
-  {id:"gv", nombre:"Gerencia de Ventas", c:3, s:8, pre:["mes"]},
-  {id:"stg", nombre:"Seminario Trabajo de Grado", c:3, s:8, pre:["mi"]},
+["mi1","Mercadeo Internacional I",3,7,[]],
+["icu","Inv. Cuantitativa",3,7,["ic"]],
+["mes","Mercadeo Estratégico",3,7,[]],
+["fp","Formulación de Proyectos",3,7,["mf"]],
 
-  // SEMESTRE 9
-  {id:"pem", nombre:"Plan Estratégico de Mercadeo", c:3, s:9, pre:["gm","gv"]},
-  {id:"im", nombre:"Inteligencia de Mercados", c:3, s:9, pre:[]},
-  {id:"gdl", nombre:"Gerencia de Distribución y Logística", c:3, s:9, pre:[]},
-  {id:"ni", nombre:"Negocios Internacionales", c:3, s:9, pre:[]},
+["mi2","Mercadeo Internacional II",3,8,["mi1"]],
+["gm","Gerencia de Marca",3,8,["gp"]],
+["gv","Gerencia de Ventas",3,8,["mes"]],
+["stg","Seminario de Grado",3,8,["mi"]],
 
-  // SEMESTRE 10
-  {id:"pp", nombre:"Práctica Profesional", c:11, s:10, pre:["pem"]}
+["pem","Plan Estratégico",3,9,["gm","gv"]],
+["im","Inteligencia de Mercados",3,9,[]],
+["gdl","Distribución y Logística",3,9,[]],
+["ni","Negocios Internacionales",3,9,[]],
+
+["pp","Práctica Profesional",11,10,["pem"]]
 ];
 
-const humanisticas = [
- {id:"h1", nombre:"Humanismo", c:2},
- {id:"h2", nombre:"Cultura artística y física", c:2},
- {id:"h3", nombre:"Formación ciudadana", c:2},
- {id:"h4", nombre:"Problemáticas de contexto", c:2},
- {id:"c1", nombre:"Lectura y producción de textos I", c:1},
- {id:"c2", nombre:"Lectura y producción de textos II", c:1},
- {id:"c3", nombre:"Lenguaje y herramientas informáticas", c:2}
+const hums=[
+["h1","Humanismo",2],
+["h2","Cultura artística y física",2],
+["h3","Formación ciudadana",2],
+["h4","Problemáticas de contexto",2],
+["hp","Historia Política",2],
+["epi","Epistemología",2]
 ];
 
-let estado = JSON.parse(localStorage.getItem("estado")) || {};
+let st=JSON.parse(localStorage.getItem("st"))||{};
 
-function puede(id){
-  const m = materias.find(x=>x.id===id);
-  return m.pre.every(p=>estado[p]);
+function ok(p){return p.every(x=>st[x]);}
+function tog(id){st[id]=!st[id];save();}
+
+function save(){localStorage.setItem("st",JSON.stringify(st));draw();}
+
+function draw(){
+let m=document.getElementById("malla");m.innerHTML="";
+let prog=0,hum=0,et=st.etica?4:0;
+
+for(let s=1;s<=10;s++){
+let c=document.createElement("div");c.className="card";c.innerHTML=`<h3>Semestre ${s}</h3>`;
+materias.filter(x=>x[3]==s).forEach(x=>{
+let d=document.createElement("div");
+d.className="materia";
+if(!ok(x[4]))d.classList.add("bloqueada");
+if(st[x[0]]){d.classList.add("aprobada");prog+=x[2];}
+d.innerHTML=`<span>${x[1]} (${x[2]})</span>
+<input type="checkbox" ${st[x[0]]?"checked":""} ${ok(x[4])?"":"disabled"} onclick="tog('${x[0]}')">`;
+c.appendChild(d);
+});
+m.appendChild(c);
 }
 
-function toggle(id){
-  if(!puede(id)) return;
-  estado[id] = !estado[id];
-  localStorage.setItem("estado",JSON.stringify(estado));
-  render();
+let h=document.getElementById("hum");h.innerHTML="";
+hums.forEach(x=>{
+if(st[x[0]])hum+=x[2];
+h.innerHTML+=`<div class="materia ${st[x[0]]?"aprobada":""}">
+<span>${x[1]} (${x[2]})</span>
+<input type="checkbox" ${st[x[0]]?"checked":""} onclick="tog('${x[0]}')">
+</div>`;
+});
+
+let total=prog+hum+et;
+let pct=Math.round(total/TOTAL*100);
+bar.style.width=pct+"%";bar.textContent=pct+"%";
+cProg.textContent=prog;
+cHum.textContent=hum;
+cEt.textContent=et;
+cTot.textContent=total;
+tot.textContent=total;
 }
 
-function render(){
-  let cont = document.getElementById("contenedor");
-  cont.innerHTML="";
-  let total=0;
-
-  for(let s=1;s<=10;s++){
-    let div=document.createElement("div");
-    div.className="semestre";
-    div.innerHTML=`<h3>Semestre ${s}</h3>`;
-    materias.filter(m=>m.s===s).forEach(m=>{
-      let d=document.createElement("div");
-      d.className="materia";
-      if(!puede(m.id)) d.classList.add("bloqueada");
-      if(estado[m.id]){d.classList.add("aprobada"); total+=m.c;}
-      d.innerHTML=`<span>${m.nombre} (${m.c})</span>
-      <input type="checkbox" ${estado[m.id]?"checked":""} ${puede(m.id)?"":"disabled"} onclick="toggle('${m.id}')">`;
-      div.appendChild(d);
-    });
-    cont.appendChild(div);
-  }
-
-  humanisticas.forEach(h=>{
-    if(estado[h.id]) total+=h.c;
-  });
-
-  document.getElementById("creditos").innerText=total;
-  let porcentaje=Math.round((total/170)*100);
-  document.getElementById("porcentaje").innerText=porcentaje;
-  let bar=document.getElementById("barra");
-  bar.style.width=porcentaje+"%";
-  bar.innerText=porcentaje+"%";
-
-  let hdiv=document.getElementById("humanisticas");
-  hdiv.innerHTML="";
-  humanisticas.forEach(h=>{
-    hdiv.innerHTML+=`
-    <div class="materia ${estado[h.id]?"aprobada":""}">
-      <span>${h.nombre} (${h.c})</span>
-      <input type="checkbox" ${estado[h.id]?"checked":""}
-      onclick="estado['${h.id}']=!estado['${h.id}'];localStorage.setItem('estado',JSON.stringify(estado));render();">
-    </div>`;
-  });
-}
-
-render();
+draw();
 </script>
 
 </body>
