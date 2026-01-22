@@ -4,179 +4,204 @@
 <meta charset="UTF-8">
 <title>Malla Curricular Mercadeo</title>
 <style>
-body{
+body {
   font-family: Arial, sans-serif;
-  background:#fde6ef;
-  margin:0;
-  padding:20px;
-  color:#444;
+  background: #fdecef;
+  padding: 20px;
 }
-h1,h2,h3{
-  color:#b84a7a;
+h1, h2, h3 {
+  text-align: center;
+  color: #b83280;
 }
-.semestre, .humanisticas{
-  background:#fff0f6;
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:20px;
-  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+.semestre, .humanisticas {
+  background: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-.materia{
-  display:flex;
-  align-items:center;
-  margin:6px 0;
+.materia {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px;
+  border-bottom: 1px dashed #f3c2d3;
 }
-.materia input{
-  margin-right:10px;
+.materia.bloqueada {
+  opacity: 0.4;
 }
-.materia.bloqueada{
-  opacity:0.4;
+.materia.aprobada span {
+  text-decoration: line-through;
 }
-.materia.aprobada span{
-  text-decoration:line-through;
+.progress {
+  background: #f3c2d3;
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 15px 0;
 }
-.progress-container{
-  background:#f7b3c9;
-  border-radius:20px;
-  overflow:hidden;
-  margin:10px 0 20px;
-}
-.progress-bar{
-  height:20px;
-  background:#b84a7a;
-  width:0%;
-  transition:0.4s;
-}
-.info{
-  margin-bottom:10px;
-  font-weight:bold;
+.progress-bar {
+  background: #b83280;
+  height: 20px;
+  width: 0%;
+  color: white;
+  text-align: center;
+  font-size: 12px;
 }
 </style>
 </head>
-
 <body>
 
-<h1>📚 Mi Malla Curricular – Mercadeo</h1>
+<h1>📚 Malla Curricular – Mercadeo</h1>
 
-<div class="info">
-  Créditos aprobados: <span id="creditosActuales">0</span> / <span id="creditosTotales">0</span>
+<div class="progress">
+  <div class="progress-bar" id="barra">0%</div>
 </div>
-<div class="info">
-  Avance de la carrera: <span id="porcentaje">0%</span>
-</div>
-<div class="progress-container">
-  <div class="progress-bar" id="barra"></div>
-</div>
+<p style="text-align:center;">
+Créditos aprobados: <span id="creditos">0</span> |
+Avance: <span id="porcentaje">0</span>%
+</p>
 
-<!-- SEMESTRE 1 -->
-<div class="semestre">
-<h2>Semestre 1</h2>
-<div class="materia" data-id="intro_economia" data-creditos="3">
-  <input type="checkbox">
-  <span>Introducción a la Economía (3)</span>
-</div>
-<div class="materia" data-id="fundamentos_marketing" data-creditos="3">
-  <input type="checkbox">
-  <span>Fundamentos de Marketing (3)</span>
-</div>
-</div>
+<div id="contenedor"></div>
 
-<!-- SEMESTRE 2 -->
-<div class="semestre">
-<h2>Semestre 2</h2>
-<div class="materia bloqueada" data-id="microeconomia" data-creditos="3" data-req="intro_economia">
-  <input type="checkbox" disabled>
-  <span>Microeconomía (3)</span>
-</div>
-<div class="materia bloqueada" data-id="comportamiento_consumidor" data-creditos="3" data-req="fundamentos_marketing">
-  <input type="checkbox" disabled>
-  <span>Comportamiento del Consumidor (3)</span>
-</div>
-</div>
-
-<!-- SEMESTRE 3 -->
-<div class="semestre">
-<h2>Semestre 3</h2>
-<div class="materia bloqueada" data-id="investigacion_mercados" data-creditos="3" data-req="comportamiento_consumidor">
-  <input type="checkbox" disabled>
-  <span>Investigación de Mercados (3)</span>
-</div>
-</div>
-
-<!-- HUMANÍSTICAS -->
 <div class="humanisticas">
-<h2>🌱 Formación Humanística</h2>
-<div class="materia" data-id="humanistica1" data-creditos="2">
-  <input type="checkbox">
-  <span>Humanística I (2)</span>
-</div>
-<div class="materia" data-id="humanistica2" data-creditos="2">
-  <input type="checkbox">
-  <span>Humanística II (2)</span>
-</div>
+<h2>🌸 Humanísticas y Competencias</h2>
+<div id="humanisticas"></div>
 </div>
 
 <script>
-const materias = document.querySelectorAll('.materia');
-const creditosActualesEl = document.getElementById('creditosActuales');
-const creditosTotalesEl = document.getElementById('creditosTotales');
-const barra = document.getElementById('barra');
-const porcentajeEl = document.getElementById('porcentaje');
+const materias = [
+  // SEMESTRE 1
+  {id:"fm", nombre:"Fundamentos de Mercadeo", c:3, s:1, pre:[]},
+  {id:"ps", nombre:"Psicología del Consumidor", c:2, s:1, pre:[]},
+  {id:"ti", nombre:"Teoría de la Investigación", c:3, s:1, pre:[]},
+  {id:"ie", nombre:"Introducción a la Economía", c:3, s:1, pre:[]},
+  {id:"cd", nombre:"Cálculo Diferencial e Integral", c:3, s:1, pre:[]},
 
-let totalCreditos = 0;
-materias.forEach(m => totalCreditos += parseInt(m.dataset.creditos));
-creditosTotalesEl.textContent = totalCreditos;
+  // SEMESTRE 2
+  {id:"cc", nombre:"Comportamiento del Consumidor", c:2, s:2, pre:["ps"]},
+  {id:"mi", nombre:"Metodología de la Investigación", c:3, s:2, pre:[]},
+  {id:"me", nombre:"Microeconomía", c:3, s:2, pre:["ie"]},
+  {id:"am", nombre:"Álgebra de Matrices y Prog. Lineal", c:3, s:2, pre:[]},
+  {id:"ad", nombre:"Administración", c:2, s:2, pre:[]},
 
-function actualizar(){
-  let aprobados = 0;
-  materias.forEach(m=>{
-    const chk = m.querySelector('input');
-    if(chk.checked){
-      aprobados += parseInt(m.dataset.creditos);
-      m.classList.add('aprobada');
-    }else{
-      m.classList.remove('aprobada');
-    }
-  });
+  // SEMESTRE 3
+  {id:"lc", nombre:"Legislación Comercial", c:3, s:3, pre:[]},
+  {id:"gp", nombre:"Gerencia del Producto", c:3, s:3, pre:[]},
+  {id:"ma", nombre:"Macroeconomía", c:3, s:3, pre:[]},
+  {id:"e1", nombre:"Estadística I", c:3, s:3, pre:[]},
+  {id:"co", nombre:"Contabilidad Financiera y Costos", c:2, s:3, pre:[]},
 
-  creditosActualesEl.textContent = aprobados;
-  const porcentaje = Math.round((aprobados / totalCreditos) * 100);
-  barra.style.width = porcentaje + '%';
-  porcentajeEl.textContent = porcentaje + '%';
+  // SEMESTRE 4
+  {id:"ms", nombre:"Mercadeo de Servicios", c:3, s:4, pre:[]},
+  {id:"gpr", nombre:"Gerencia de Precio", c:3, s:4, pre:["cc"]},
+  {id:"lab", nombre:"Laboratorio del Consumidor", c:3, s:4, pre:[]},
+  {id:"eco", nombre:"Economía Colombiana", c:3, s:4, pre:[]},
+  {id:"e2", nombre:"Estadística II", c:3, s:4, pre:["e1"]},
 
-  // desbloqueo
-  materias.forEach(m=>{
-    const req = m.dataset.req;
-    if(req){
-      const cumplida = document.querySelector(`[data-id="${req}"] input`).checked;
-      const chk = m.querySelector('input');
-      if(cumplida){
-        m.classList.remove('bloqueada');
-        chk.disabled = false;
-      }
-    }
-  });
+  // SEMESTRE 5
+  {id:"mix", nombre:"Mix de Comunicación", c:3, s:5, pre:["fm"]},
+  {id:"emp", nombre:"Empaques y Embalajes", c:3, s:5, pre:["fm"]},
+  {id:"green", nombre:"Green Marketing", c:2, s:5, pre:[]},
+  {id:"sim", nombre:"Sistema de Información de Mercados", c:3, s:5, pre:[]},
+  {id:"mf", nombre:"Matemática Financiera", c:3, s:5, pre:[]},
 
-  // guardar
-  const estado = {};
-  materias.forEach(m=>{
-    estado[m.dataset.id] = m.querySelector('input').checked;
-  });
-  localStorage.setItem('malla', JSON.stringify(estado));
+  // SEMESTRE 6
+  {id:"mp", nombre:"Mercadeo Promocional y Merchandising", c:3, s:6, pre:["mix"]},
+  {id:"pub", nombre:"Publicidad", c:3, s:6, pre:["mix"]},
+  {id:"empn", nombre:"Empresarismo e Idea de Negocios", c:2, s:6, pre:[]},
+  {id:"melec", nombre:"Mercadeo Electrónico", c:3, s:6, pre:[]},
+  {id:"ic", nombre:"Investigación Cualitativa", c:3, s:6, pre:["sim"]},
+
+  // SEMESTRE 7
+  {id:"mi1", nombre:"Mercadeo Internacional I", c:3, s:7, pre:[]},
+  {id:"icu", nombre:"Investigación Cuantitativa", c:3, s:7, pre:["ic"]},
+  {id:"mes", nombre:"Mercadeo Estratégico", c:3, s:7, pre:[]},
+  {id:"fp", nombre:"Formulación y Eval. de Proyectos", c:3, s:7, pre:["mf"]},
+
+  // SEMESTRE 8
+  {id:"mi2", nombre:"Mercadeo Internacional II", c:3, s:8, pre:["mi1"]},
+  {id:"gm", nombre:"Gerencia de Marca", c:3, s:8, pre:["gp"]},
+  {id:"gv", nombre:"Gerencia de Ventas", c:3, s:8, pre:["mes"]},
+  {id:"stg", nombre:"Seminario Trabajo de Grado", c:3, s:8, pre:["mi"]},
+
+  // SEMESTRE 9
+  {id:"pem", nombre:"Plan Estratégico de Mercadeo", c:3, s:9, pre:["gm","gv"]},
+  {id:"im", nombre:"Inteligencia de Mercados", c:3, s:9, pre:[]},
+  {id:"gdl", nombre:"Gerencia de Distribución y Logística", c:3, s:9, pre:[]},
+  {id:"ni", nombre:"Negocios Internacionales", c:3, s:9, pre:[]},
+
+  // SEMESTRE 10
+  {id:"pp", nombre:"Práctica Profesional", c:11, s:10, pre:["pem"]}
+];
+
+const humanisticas = [
+ {id:"h1", nombre:"Humanismo", c:2},
+ {id:"h2", nombre:"Cultura artística y física", c:2},
+ {id:"h3", nombre:"Formación ciudadana", c:2},
+ {id:"h4", nombre:"Problemáticas de contexto", c:2},
+ {id:"c1", nombre:"Lectura y producción de textos I", c:1},
+ {id:"c2", nombre:"Lectura y producción de textos II", c:1},
+ {id:"c3", nombre:"Lenguaje y herramientas informáticas", c:2}
+];
+
+let estado = JSON.parse(localStorage.getItem("estado")) || {};
+
+function puede(id){
+  const m = materias.find(x=>x.id===id);
+  return m.pre.every(p=>estado[p]);
 }
 
-materias.forEach(m=>{
-  m.querySelector('input').addEventListener('change', actualizar);
-});
+function toggle(id){
+  if(!puede(id)) return;
+  estado[id] = !estado[id];
+  localStorage.setItem("estado",JSON.stringify(estado));
+  render();
+}
 
-// cargar progreso
-const guardado = JSON.parse(localStorage.getItem('malla') || '{}');
-materias.forEach(m=>{
-  if(guardado[m.dataset.id]){
-    m.querySelector('input').checked = true;
+function render(){
+  let cont = document.getElementById("contenedor");
+  cont.innerHTML="";
+  let total=0;
+
+  for(let s=1;s<=10;s++){
+    let div=document.createElement("div");
+    div.className="semestre";
+    div.innerHTML=`<h3>Semestre ${s}</h3>`;
+    materias.filter(m=>m.s===s).forEach(m=>{
+      let d=document.createElement("div");
+      d.className="materia";
+      if(!puede(m.id)) d.classList.add("bloqueada");
+      if(estado[m.id]){d.classList.add("aprobada"); total+=m.c;}
+      d.innerHTML=`<span>${m.nombre} (${m.c})</span>
+      <input type="checkbox" ${estado[m.id]?"checked":""} ${puede(m.id)?"":"disabled"} onclick="toggle('${m.id}')">`;
+      div.appendChild(d);
+    });
+    cont.appendChild(div);
   }
-});
-actualizar();
+
+  humanisticas.forEach(h=>{
+    if(estado[h.id]) total+=h.c;
+  });
+
+  document.getElementById("creditos").innerText=total;
+  let porcentaje=Math.round((total/170)*100);
+  document.getElementById("porcentaje").innerText=porcentaje;
+  let bar=document.getElementById("barra");
+  bar.style.width=porcentaje+"%";
+  bar.innerText=porcentaje+"%";
+
+  let hdiv=document.getElementById("humanisticas");
+  hdiv.innerHTML="";
+  humanisticas.forEach(h=>{
+    hdiv.innerHTML+=`
+    <div class="materia ${estado[h.id]?"aprobada":""}">
+      <span>${h.nombre} (${h.c})</span>
+      <input type="checkbox" ${estado[h.id]?"checked":""}
+      onclick="estado['${h.id}']=!estado['${h.id}'];localStorage.setItem('estado',JSON.stringify(estado));render();">
+    </div>`;
+  });
+}
+
+render();
 </script>
 
 </body>
