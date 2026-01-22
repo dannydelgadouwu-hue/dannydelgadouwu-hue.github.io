@@ -2,164 +2,135 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Malla Mercadeo</title>
+<title>Malla Curricular Mercadeo</title>
 <style>
-body{font-family:Arial;background:#fdecef;padding:20px}
-h1,h2,h3{text-align:center;color:#b83280}
-.card{background:#fff;border-radius:16px;padding:15px;margin-bottom:20px;box-shadow:0 4px 8px rgba(0,0,0,.1)}
-.materia{display:flex;justify-content:space-between;padding:6px;border-bottom:1px dashed #f3c2d3}
-.aprobada span{text-decoration:line-through}
+body{font-family:Arial;background:#f6f6f6;padding:20px}
+h1,h2{color:#333}
+.semestre{background:#fff;border-radius:10px;padding:15px;margin-bottom:15px}
+.materia{display:flex;justify-content:space-between;align-items:center;margin:5px 0}
 .bloqueada{opacity:.4}
-.progress{background:#f3c2d3;border-radius:20px;overflow:hidden}
-.bar{background:#b83280;height:22px;color:#fff;text-align:center;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.grid div{background:#ffe4ef;border-radius:12px;padding:10px;text-align:center}
+progress{width:100%;height:20px}
+.creditos{font-size:14px;color:#666}
 </style>
 </head>
 <body>
 
-<h1>📚 Malla Curricular – Mercadeo</h1>
-
-<div class="progress"><div id="bar" class="bar">0%</div></div>
-<p style="text-align:center"><b><span id="tot">0</span> / 165 créditos</b></p>
-
-<div class="card">
-<h2>📊 Resumen Créditos Académicos</h2>
-<div class="grid">
-<div>Programa<br><b><span id="cProg">0</span> / 149</b></div>
-<div>Humanísticas<br><b><span id="cHum">0</span> / 12</b></div>
-<div>Ética<br><b><span id="cEt">0</span> / 4</b></div>
-<div>Total General<br><b><span id="cTot">0</span> / 165</b></div>
-</div>
-</div>
+<h1>Malla Curricular – Mercadeo</h1>
+<progress id="barra" value="0" max="165"></progress>
+<p id="porcentaje">0%</p>
 
 <div id="malla"></div>
 
-<div class="card">
-<h2>🌸 Humanísticas y Competencias</h2>
-<div id="hum"></div>
-</div>
-
-<div class="card">
-<h2>⚖️ Ética y Compromiso Social</h2>
-<div class="materia">
-<span>Ética y Compromiso Social (4)</span>
-<input type="checkbox" onclick="tog('etica')" id="etica">
-</div>
+<h2>Electivas y Formación Humanística</h2>
+<div class="semestre">
+  <div class="materia"><label><input type="checkbox" data-creditos="4"> Electivas de Complementación</label><span>4 créditos</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación Humanística I</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación Humanística II</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Formación Ciudadana</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Problemáticas de Contexto</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Historia Política</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="2"> Epistemología</label><span>2</span></div>
+  <div class="materia"><label><input type="checkbox" data-creditos="4"> Ética y Compromiso Social</label><span>4</span></div>
 </div>
 
 <script>
-const TOTAL=165;
-
-const materias=[
-["fm","Fundamentos de Mercadeo",3,1,[]],
-["ps","Psicología del Consumidor",2,1,[]],
-["ti","Teoría de la Investigación",3,1,[]],
-["ie","Introducción a la Economía",3,1,[]],
-["cd","Cálculo Diferencial e Integral",3,1,[]],
-
-["cc","Comportamiento del Consumidor",2,2,["ps"]],
-["mi","Metodología de la Investigación",3,2,[]],
-["me","Microeconomía",3,2,["ie"]],
-["am","Álgebra de Matrices",3,2,[]],
-["ad","Administración",2,2,[]],
-
-["lc","Legislación Comercial",3,3,[]],
-["gp","Gerencia del Producto",3,3,[]],
-["ma","Macroeconomía",3,3,[]],
-["e1","Estadística I",3,3,[]],
-["co","Contabilidad y Costos",2,3,[]],
-
-["ms","Mercadeo de Servicios",3,4,[]],
-["gpr","Gerencia de Precio",3,4,["cc"]],
-["lab","Laboratorio del Consumidor",3,4,[]],
-["eco","Economía Colombiana",3,4,[]],
-["e2","Estadística II",3,4,["e1"]],
-
-["mix","Mix de Comunicación",3,5,["fm"]],
-["emp","Empaques y Embalajes",3,5,["fm"]],
-["green","Green Marketing",2,5,[]],
-["sim","Sistema de Info. de Mercados",3,5,[]],
-["mf","Matemática Financiera",3,5,[]],
-
-["mp","Mercadeo Promocional",3,6,["mix"]],
-["pub","Publicidad",3,6,["mix"]],
-["empn","Empresarismo",2,6,[]],
-["melec","Mercadeo Electrónico",3,6,[]],
-["ic","Inv. Cualitativa",3,6,["sim"]],
-
-["mi1","Mercadeo Internacional I",3,7,[]],
-["icu","Inv. Cuantitativa",3,7,["ic"]],
-["mes","Mercadeo Estratégico",3,7,[]],
-["fp","Formulación de Proyectos",3,7,["mf"]],
-
-["mi2","Mercadeo Internacional II",3,8,["mi1"]],
-["gm","Gerencia de Marca",3,8,["gp"]],
-["gv","Gerencia de Ventas",3,8,["mes"]],
-["stg","Seminario de Grado",3,8,["mi"]],
-
-["pem","Plan Estratégico",3,9,["gm","gv"]],
-["im","Inteligencia de Mercados",3,9,[]],
-["gdl","Distribución y Logística",3,9,[]],
-["ni","Negocios Internacionales",3,9,[]],
-
-["pp","Práctica Profesional",11,10,["pem"]]
+const semestres = [
+{n:1,m:[
+["Fundamentos de Mercadeo",3],
+["Psicología del Consumidor",2],
+["Teoría de la Investigación",3],
+["Introducción a la Economía",3],
+["Cálculo Diferencial e Integral",3]
+]},
+{n:2,m:[
+["Comportamiento del Consumidor",2],
+["Metodología de la Investigación",3],
+["Microeconomía",3],
+["Álgebra de Matrices y Prog. Lineal",3],
+["Administración",2]
+]},
+{n:3,m:[
+["Legislación Comercial",3],
+["Gerencia del Producto",3],
+["Macroeconomía",3],
+["Estadística I",3],
+["Contabilidad Financiera",2],
+["Práctica Investigativa",5]
+]},
+{n:4,m:[
+["Mercadeo de Servicios",3],
+["Gerencia de Precio",3],
+["Laboratorio del Consumidor",3],
+["Economía Colombiana",3],
+["Estadística II",3],
+["Práctica Investigativa",0]
+]},
+{n:5,m:[
+["Mix de Comunicación",3],
+["Empaques y Embalajes",3],
+["Green Marketing",2],
+["Sistema de Información de Mercados",3],
+["Matemática Financiera",3],
+["Práctica Investigativa",0]
+]},
+{n:6,m:[
+["Mercadeo Promocional",3],
+["Publicidad",3],
+["Empresarismo",2],
+["Mercadeo Electrónico",3],
+["Investigación Cualitativa",3],
+["Práctica Investigativa",0]
+]},
+{n:7,m:[
+["Mercadeo Internacional I",3],
+["Investigación Cuantitativa",3],
+["Mercadeo Estratégico",3],
+["Formulación de Proyectos",3],
+["Electiva de Profundización",3]
+]},
+{n:8,m:[
+["Mercadeo Internacional II",3],
+["Gerencia de Marca",3],
+["Gerencia de Ventas",3],
+["Seminario Trabajo de Grado",3],
+["Electiva de Profundización",3]
+]},
+{n:9,m:[
+["Plan Estratégico de Mercadeo",3],
+["Inteligencia de Mercados",3],
+["Gerencia de Distribución",3],
+["Negocios Internacionales",3],
+["Electiva de Profundización",3]
+]},
+{n:10,m:[
+["Práctica Profesional",11]
+]}
 ];
 
-const hums=[
-["h1","Humanismo",2],
-["h2","Cultura artística y física",2],
-["h3","Formación ciudadana",2],
-["h4","Problemáticas de contexto",2],
-["hp","Historia Política",2],
-["epi","Epistemología",2]
-];
+const cont=document.getElementById("malla");
 
-let st=JSON.parse(localStorage.getItem("st"))||{};
-
-function ok(p){return p.every(x=>st[x]);}
-function tog(id){st[id]=!st[id];save();}
-
-function save(){localStorage.setItem("st",JSON.stringify(st));draw();}
-
-function draw(){
-let m=document.getElementById("malla");m.innerHTML="";
-let prog=0,hum=0,et=st.etica?4:0;
-
-for(let s=1;s<=10;s++){
-let c=document.createElement("div");c.className="card";c.innerHTML=`<h3>Semestre ${s}</h3>`;
-materias.filter(x=>x[3]==s).forEach(x=>{
+semestres.forEach(s=>{
 let d=document.createElement("div");
-d.className="materia";
-if(!ok(x[4]))d.classList.add("bloqueada");
-if(st[x[0]]){d.classList.add("aprobada");prog+=x[2];}
-d.innerHTML=`<span>${x[1]} (${x[2]})</span>
-<input type="checkbox" ${st[x[0]]?"checked":""} ${ok(x[4])?"":"disabled"} onclick="tog('${x[0]}')">`;
-c.appendChild(d);
+d.className="semestre";
+d.innerHTML=`<h2>Semestre ${s.n}</h2>`;
+s.m.forEach(m=>{
+let row=document.createElement("div");
+row.className="materia";
+row.innerHTML=`<label><input type="checkbox" data-creditos="${m[1]}"> ${m[0]}</label><span>${m[1]} cr</span>`;
+d.appendChild(row);
 });
-m.appendChild(c);
-}
-
-let h=document.getElementById("hum");h.innerHTML="";
-hums.forEach(x=>{
-if(st[x[0]])hum+=x[2];
-h.innerHTML+=`<div class="materia ${st[x[0]]?"aprobada":""}">
-<span>${x[1]} (${x[2]})</span>
-<input type="checkbox" ${st[x[0]]?"checked":""} onclick="tog('${x[0]}')">
-</div>`;
+cont.appendChild(d);
 });
 
-let total=prog+hum+et;
-let pct=Math.round(total/TOTAL*100);
-bar.style.width=pct+"%";bar.textContent=pct+"%";
-cProg.textContent=prog;
-cHum.textContent=hum;
-cEt.textContent=et;
-cTot.textContent=total;
-tot.textContent=total;
-}
+const checks=document.querySelectorAll("input[type=checkbox]");
+checks.forEach(c=>c.addEventListener("change",actualizar));
 
-draw();
+function actualizar(){
+let total=0;
+checks.forEach(c=>{if(c.checked) total+=Number(c.dataset.creditos)});
+document.getElementById("barra").value=total;
+document.getElementById("porcentaje").innerText=Math.round(total/165*100)+"% completado";
+}
 </script>
 
 </body>
